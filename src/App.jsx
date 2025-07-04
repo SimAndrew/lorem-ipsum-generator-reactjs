@@ -1,19 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { nanoid } from 'nanoid';
 import data from './data.js';
 
 const App = () => {
+	const dataWithIds = useMemo(() => {
+		return data.map((item) => ({ id: nanoid(), content: item }));
+	}, []);
+
 	const [count, setCount] = useState(1);
 	const [text, setText] = useState([]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		let amount = parseInt(count);
-		setText(data.slice(0, amount));
+		setText(dataWithIds.slice(0, amount));
 	};
+
+	useEffect(() => {
+		if (text.length > 0) {
+			const currentIds = text.map((item) => item.id);
+			console.log('Current IDs in text:', currentIds);
+		}
+	}, [text]);
 
 	return (
 		<section className="section-center">
-			<h4>tired of boring lorem ipsunm?</h4>
+			<h4>tired of boring lorem ipsum?</h4>
 			<form onSubmit={handleSubmit} className="lorem-form">
 				<label htmlFor="amount">paragraphs:</label>
 				<input
@@ -33,8 +45,8 @@ const App = () => {
 			</form>
 
 			<article className="lorem-text">
-				{text.map((item, index) => {
-					return <p key={index}>{item}</p>;
+				{text.map((item) => {
+					return <p key={item.id}>{item.content}</p>;
 				})}
 			</article>
 		</section>
